@@ -8,9 +8,9 @@ L'objectif du TP0 est de développer l'utilitaire `pcopy` capable de copier une 
 pcopy [<PATH> <OFFSET>-<BYTES>]...
 ```
 
-`pcopy` va parcourir les paramètres d'appel et extraire en couple les arguments suivants (dans cet ordre),
+`pcopy` va parcourir les paramètres d'appel et extraire, en couple, les arguments suivants (dans cet ordre),
 - `PATH` un chemin identifiant le fichier à copier,
-- les valeurs de `OFFSET` et `BYTES` deux entiers positifs ou nuls qui représentent, respectivement,
+- les valeurs de `OFFSET` et `BYTES` deux entiers positifs ou nuls séparés par un tiret (`-`) qui représentent, respectivement,
   - l'octet à partir duquel la copie commence,
   - le nombre d'octets à copier.
 
@@ -18,9 +18,15 @@ Une fois ces arguments lus, l'utilitaire `pcopy` va procéder ainsi,
 - il va créer un répertoire nommé `copies` dans le répertoire courant,
 - pour chaque couple `PATH`, `OFFSET-BYTES` lu,
   - il va créer un fichier dans le répertoire `copies`, avec les permissions d'accès `644`, qui porte le même nom que le fichier identifié par le chemin `PATH`,
-  - à partir de l'octet `OFFSET` inclusivement, il va copier au plus `BYTES` octets (ou jusqu'à la fin du fichier) du fichier identifié par `PATH`, dans le nouveau fichier fraichement créé dans `copies`.
+  - à partir de l'octet `OFFSET` inclusivement, il va copier au plus `BYTES` octets (ou jusqu'à la fin du fichier) du fichier identifié par `PATH`, dans le nouveau fichier du même nom fraichement créé dans `copies`.
 
 Si tout s'est déroulé sans erreur, à la fin des copies, l'utilitaire `pcopy` affiche le nombre total d'octets copiés et se termine en retournant la valeur `0`.
+
+### Traitement des erreurs et valeur de retour
+
+`pcopy` retourne `0` en cas de succès et `1` en cas d'échec. Aucun message d'erreur ne doit être affiché et tous les retours d'appels système doivent être traités correctement. Si un appel système échoue, `pcopy` s'arrête et retourne la valeur `1`. Évidemment, dépendamment de vos choix d'implémentation, certaines erreurs peuvent être acceptables/gérables et, par conséquent, ne vont pas arrêter le programme. **Pensez donc à évaluer la variable `errno`**, s'il y a lieu, avant d'arrêter l'exécution de `pcopy`.
+
+### Exemples d'exécution
 
 <p>
 
@@ -146,9 +152,6 @@ rgs[]){
 
 </p>
 
-### Valeur de retour
-
-`pcopy` retourne `0` en cas de succès et `1` en cas d'échec. 
 
 ## Directives d'implémentation
 
@@ -173,7 +176,7 @@ Pour la réalisation du TP, vous devez respecter les directives suivantes.
 - Si le répertoire `copies` existe dans le répertoire courant, il sera utilisé directement par `pcopy`.
 - Le fichier identifié par le chemin `PATH` doit être ouvert en lecture seule.
 - Si un fichier portant le nom du fichier à copié existe déjà dans le répertoire `copies`, il sera ecrasé par `pcopy`. 
-- Pour un couple `PATH`, `OFFSET-BYTES`, si la position `OFFSET` dépasse la taille du fichier identifié par `PATH`, `pcopy` s'arrête et retourne la valeur `1`. **Remarque.** Tous les fichiers qui venaient avant doivent être traités.
+- Pour un couple `PATH`, `OFFSET-BYTES`, si la position `OFFSET` dépasse la taille du fichier identifié par `PATH`, `pcopy` s'arrête et retourne la valeur `1`. **Remarque.** Tous les fichiers qui venaient avant doivent être traités et, par conséquent, `pcopy` va retourner la valeur `1` **ET** afficher le nombre d'octets copiés (même si ça vaut `0`).
 - Vous pouvez assumer que la taille maximale qui sera copiée à partir d'un fichier ne dépassera pas `4096` octets.
 - Comme le TP n'est pas si gros (de l'ordre de grandeur d'une centaines de lignes), il est attendu un effort important sur le soin du code et la gestion des cas d'erreurs.
 
